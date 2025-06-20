@@ -1,6 +1,6 @@
 {
   "name": "programming-project-tracker-specification",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Specification for the Programming Project Tracker.",
   "scripts": {
     "postinstall": "lefthook install",

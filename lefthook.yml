@@ -1,0 +1,17 @@
+# <https://lefthook.dev/configuration/>
+
+pre-push:
+  jobs:
+    - name: Verify PDF build
+      run: pandoc SPECIFICATION.md --pdf-engine=pdflatex -V geometry:margin=1.5in -o "Programming Project Tracker Specification.pdf"
+
+pre-commit:
+  jobs:
+    - name: Markdown lint
+      glob: "*.md"
+      run: markdownlint-cli2 {staged_files} --fix
+
+commit-msg:
+  jobs:
+    - name: commitlint
+      run: npx commitlint --edit "{1}"

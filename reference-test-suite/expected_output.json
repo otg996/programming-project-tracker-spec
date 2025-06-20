@@ -1,0 +1,9 @@
+[
+    "deep/down/in/the/filesystem/a-deep-project",
+    "multiple/project-a",
+    "multiple/project-b",
+    "nested/single-nested-project",
+    "project-with-submodule",
+    "project-with-submodule/vendor/my-lib",
+    "root-level-project"
+]

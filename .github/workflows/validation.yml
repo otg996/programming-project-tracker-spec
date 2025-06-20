@@ -1,0 +1,53 @@
+name: CI Validation
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validate Contribution
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v2
+        with: { version: 8 }
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with: { node-version: '20', cache: 'pnpm' }
+
+      - name: Install Node.js Dependencies
+        run: pnpm install
+
+      - name: Lint Pull Request Commit Messages
+        uses: wagoid/commitlint-github-action@v5
+        with:
+          configFile: './commitlint.config.js'
+
+      - name: Check for changes in Markdown files
+        id: changed-markdown
+        uses: tj-actions/changed-files@v41
+        with:
+          files: |
+            SPECIFICATION.md
+            README.md
+            CONTRIBUTING.md
+            PHILOSOPHY.md
+
+      - name: Lint Markdown Files
+        if: steps.changed-markdown.outputs.any_changed == 'true'
+        run: pnpm exec markdownlint-cli2 "**/*.md"
+
+      - name: Verify PDF Build
+        if: steps.changed-markdown.outputs.any_changed == 'true' && contains(steps.changed-markdown.outputs.all_changed_files, 'SPECIFICATION.md')
+        uses: docker://pandoc/latex:latest
+        with:
+          entrypoint: /bin/sh
+          args: -c "pandoc SPECIFICATION.md --pdf-engine=pdflatex -V geometry:margin=1.5in -o 'spec-build-test.pdf'"
